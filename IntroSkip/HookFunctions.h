@@ -1,12 +1,13 @@
 #pragma once
 #pragma once
 #include <Windows.h>
+#include <string>
 
 static bool OverrideCharArray(intptr_t addressOfText, const char* textToOverrideWith, const size_t OriginalLenght)
 {
 	if (std::strlen(textToOverrideWith) > OriginalLenght)
 	{
-		MessageBox(NULL, "Char to override with is longer than original char", "Error", MB_OK | MB_ICONERROR);
+		MessageBox(NULL, L"Char to override with is longer than original char", L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
 
@@ -19,7 +20,7 @@ static bool OverrideCharArray(intptr_t addressOfText, const char* textToOverride
 	return true;
 }
 
-static int StrEndsWith(char* chrArray, int lenght, char character)
+static int StrEndsWith(WCHAR* chrArray, int lenght, char character)
 {
 	int pos = -1;
 	for (int i = 0; i < lenght; i++)
@@ -31,9 +32,10 @@ static int StrEndsWith(char* chrArray, int lenght, char character)
 	return pos;
 }
 
-static void StrToLower(char* chrArray, int Lenght)
+static void StrToLower(WCHAR* chrArray)
 {
-	for (int i = 0; i < Lenght; i++)
+	int lenght = std::wcslen(chrArray);
+	for (int i = 0; i < lenght; i++)
 	{
 		chrArray[i] = ::tolower(chrArray[i]);
 	}

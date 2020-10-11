@@ -9,33 +9,34 @@ BOOL WINAPI DllMain(HINSTANCE hInst, DWORD reason, LPVOID)
 	if (reason == DLL_PROCESS_ATTACH)
 	{
 		HMODULE baseModule = GetModuleHandle(NULL);
-		char baseModuleName[MAX_PATH];
+		WCHAR baseModuleName[MAX_PATH];
 		GetModuleFileName(baseModule, baseModuleName, sizeof(baseModuleName));
 		int indexOfLastPathNode = StrEndsWith(baseModuleName, sizeof(baseModuleName), '\\') + 1;
-		char exeName[MAX_PATH];
-		auto lenght = sizeof(baseModuleName);
-		strcpy_s(exeName, lenght, baseModuleName + indexOfLastPathNode);
-		StrToLower(exeName, sizeof(exeName));
+		
+		WCHAR exeName[MAX_PATH];
+		auto lenght = std::wcslen(baseModuleName);
+		wcscpy_s(exeName, lenght, baseModuleName + indexOfLastPathNode);
+		StrToLower(exeName);
 
-		std::regex pattern("dead(\\s|\\_)space?(.+)\\.exe");
+		std::wregex pattern(L"dead(\\s|\\_)space?(.+)\\.exe");
 		if (std::regex_search(exeName, pattern))
 		{
 			MODULEINFO moduleInfo;
 			GetModuleInformation(GetCurrentProcess(), baseModule, &moduleInfo, sizeof(moduleInfo));
-			if (moduleInfo.SizeOfImage == 12009472 || moduleInfo.SizeOfImage == 12353536) //Steam Unpacked or Normal
-			{
+			if (moduleInfo.SizeOfImage == 12009472 || moduleInfo.SizeOfImage == 12353536)	//Steam Unpacked or Normal
 				OverrideCharArray(0x00C7B13C, "XCENTKOWSK_C78C369_F71988A_v3", 29);
-			}
+			else if (moduleInfo.SizeOfImage == 12001280)									//GOG
+				OverrideCharArray(0x00C7C414, "XCENTKOWSK_C78C369_F71988A_v3", 29);
 			else
 			{
-				std::string messageBoxText = "Unknown module size: " + std::to_string(moduleInfo.SizeOfImage) + ".\nNothing was overriden!";
-				MessageBox(NULL, messageBoxText.c_str(), "Warning", MB_ICONWARNING | MB_OK);
+				std::wstring messageBoxText = L"Unknown module size: " + std::to_wstring(moduleInfo.SizeOfImage) + L".\nNothing was overriden!";
+				MessageBox(NULL, messageBoxText.c_str(), L"Warning", MB_ICONWARNING | MB_OK);
 			}
 		}
 		else
 		{
-			std::string messageBoxText = "Unrecognized exe name: " + (std::string)exeName;
-			MessageBox(NULL, messageBoxText.c_str(), "Warning", MB_ICONWARNING | MB_OK);
+			std::wstring messageBoxText = L"Unrecognized exe name: " + (std::wstring)exeName + L"\nFull path: " + (std::wstring)baseModuleName;
+			MessageBox(NULL, messageBoxText.c_str(), L"Warning", MB_ICONWARNING | MB_OK);
 		}
 	}
 	else if (reason == DLL_PROCESS_DETACH) {
