@@ -1,6 +1,7 @@
 #include <Windows.h>
 #include <Psapi.h>
 #include <string>
+#include <regex>
 #include "HookFunctions.h"
 
 BOOL WINAPI DllMain(HINSTANCE hInst, DWORD reason, LPVOID)
@@ -12,10 +13,12 @@ BOOL WINAPI DllMain(HINSTANCE hInst, DWORD reason, LPVOID)
 		GetModuleFileName(baseModule, baseModuleName, sizeof(baseModuleName));
 		int indexOfLastPathNode = StrEndsWith(baseModuleName, sizeof(baseModuleName), '\\') + 1;
 		char exeName[MAX_PATH];
-		strcpy_s(exeName, baseModuleName + indexOfLastPathNode);
+		auto lenght = sizeof(baseModuleName);
+		strcpy_s(exeName, lenght, baseModuleName + indexOfLastPathNode);
 		StrToLower(exeName, sizeof(exeName));
 
-		if (std::strstr((const char*)&exeName, "dead space.exe") || std::strstr((const char*)&exeName, "dead_space.exe") || std::strstr((const char*)&exeName, "dead space.exe.unpacked.exe"))
+		std::regex pattern("dead(\\s|\\_)space?(.+)\\.exe");
+		if (std::regex_search(exeName, pattern))
 		{
 			MODULEINFO moduleInfo;
 			GetModuleInformation(GetCurrentProcess(), baseModule, &moduleInfo, sizeof(moduleInfo));
@@ -25,11 +28,14 @@ BOOL WINAPI DllMain(HINSTANCE hInst, DWORD reason, LPVOID)
 			}
 			else
 			{
-
 				std::string messageBoxText = "Unknown module size: " + std::to_string(moduleInfo.SizeOfImage) + ".\nNothing was overriden!";
 				MessageBox(NULL, messageBoxText.c_str(), "Warning", MB_ICONWARNING | MB_OK);
-
 			}
+		}
+		else
+		{
+			std::string messageBoxText = "Unrecognized exe name: " + (std::string)exeName;
+			MessageBox(NULL, messageBoxText.c_str(), "Warning", MB_ICONWARNING | MB_OK);
 		}
 	}
 	else if (reason == DLL_PROCESS_DETACH) {
