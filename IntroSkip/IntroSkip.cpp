@@ -22,7 +22,7 @@ BOOL WINAPI DllMain(HINSTANCE hInst, DWORD reason, LPVOID)
 		{
 			MODULEINFO moduleInfo;
 			GetModuleInformation(GetCurrentProcess(), baseModule, &moduleInfo, sizeof(moduleInfo));
-			if (moduleInfo.SizeOfImage == 12009472) //Steam
+			if (moduleInfo.SizeOfImage == 12009472 || moduleInfo.SizeOfImage == 12353536) //Steam Unpacked or Normal
 			{
 				OverrideCharArray(0x00C7B13C, "XCENTKOWSK_C78C369_F71988A_v3", 29);
 			}

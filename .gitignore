@@ -30,6 +30,11 @@
 *.out
 *.app
 
+# Archives
+*.zip
+*.7z
+*.rar
+
 # VS garbo
 .vs/*
 IntroSkip/Debug/*
