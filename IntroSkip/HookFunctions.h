@@ -20,6 +20,17 @@ static bool OverrideCharArray(intptr_t addressOfText, const char* textToOverride
 	return true;
 }
 
+static bool OverrideByte(intptr_t addressOfByteToOverride, byte ByteToOverrideWith)
+{
+	DWORD curProtectionFlag;
+	VirtualProtect((void*)addressOfByteToOverride, ByteToOverrideWith, PAGE_EXECUTE_READWRITE, &curProtectionFlag);
+	*(byte*)addressOfByteToOverride = ByteToOverrideWith;
+	DWORD temp;
+	VirtualProtect((void*)addressOfByteToOverride, ByteToOverrideWith, curProtectionFlag, &temp);
+
+	return true;
+}
+
 static int StrEndsWith(WCHAR* chrArray, int lenght, char character)
 {
 	int pos = -1;

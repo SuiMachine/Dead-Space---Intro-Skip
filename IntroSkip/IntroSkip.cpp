@@ -25,10 +25,12 @@ BOOL WINAPI DllMain(HINSTANCE hInst, DWORD reason, LPVOID)
 			GetModuleInformation(GetCurrentProcess(), baseModule, &moduleInfo, sizeof(moduleInfo));
 			if (moduleInfo.SizeOfImage == 12009472 //Steam Unpacked 
 				|| moduleInfo.SizeOfImage == 12353536 //Steam Normal
+				|| moduleInfo.SizeOfImage == 12001280 //GOG
 				|| moduleInfo.SizeOfImage == 12005376 //Origin
-				|| moduleInfo.SizeOfImage == 12005376 //GOG
 				)
+			{
 				OverrideCharArray(0x00C7B13C, "XCENTKOWSK_C78C369_F71988A_v3", 29);
+			}
 			else
 			{
 				std::wstring messageBoxText = L"Unknown module size: " + std::to_wstring(moduleInfo.SizeOfImage) + L".\nNothing was overriden!";
